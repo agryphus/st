@@ -32,12 +32,12 @@
 /* This patch allows st to resize to any pixel size rather than snapping to character width/height.
  * https://st.suckless.org/patches/anysize/
  */
-#define ANYSIZE_PATCH 1
+#define ANYSIZE_PATCH 0
 
 /* A simple variant of the anysize patch that only changes the resize hints to allow the window to
  * be resized to any size.
  */
-#define ANYSIZE_SIMPLE_PATCH 0
+#define ANYSIZE_SIMPLE_PATCH 1
 
 /* Draws a background image in farbfeld format in place of the defaultbg color allowing for pseudo
  * transparency.
