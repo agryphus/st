@@ -7,11 +7,7 @@ VERSION = 0.9.2
 PREFIX = /usr/local
 MANPREFIX = $(PREFIX)/share/man
 ICONPREFIX = $(PREFIX)/share/pixmaps
-<<<<<<< HEAD
 ICONNAME = st.png
-=======
-ICONNAME = st.ff
->>>>>>> b77c723 (netwmicon: upgrading patch and adding farbfeld variant (#121))
 
 X11INC = /usr/X11R6/include
 X11LIB = /usr/X11R6/lib
@@ -19,7 +15,7 @@ X11LIB = /usr/X11R6/lib
 PKG_CONFIG = pkg-config
 
 # Uncomment this for the alpha patch / ALPHA_PATCH
-#XRENDER = `$(PKG_CONFIG) --libs xrender`
+XRENDER = `$(PKG_CONFIG) --libs xrender`
 
 # Uncomment this for the themed cursor patch / THEMED_CURSOR_PATCH
 #XCURSOR = `$(PKG_CONFIG) --libs xcursor`
@@ -32,7 +28,7 @@ LIGATURES_LIBS = `$(PKG_CONFIG) --libs harfbuzz`
 
 # Uncomment this for the SIXEL patch / SIXEL_PATCH
 SIXEL_C = sixel.c sixel_hls.c
-#SIXEL_LIBS = `$(PKG_CONFIG) --libs imlib2`
+SIXEL_LIBS = `$(PKG_CONFIG) --libs imlib2`
 
 # Uncomment for the netwmicon patch / NETWMICON_PATCH
 #NETWMICON_LIBS = `$(PKG_CONFIG) --libs gdlib`

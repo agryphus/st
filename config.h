@@ -3,7 +3,12 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-static char *font = "FiraCodeNerdFont:pixelsize=20:antialias=true:autohint=true";
+static char *font = "FiraCode:pixelsize=20:antialias=true:autohint=true";
+/* Spare fonts */
+static char *font2[] = {
+    "Symbols Nerd Font Mono:pixelsize=20:antialias=true:autohint=true"
+};
+
 static int borderpx = 4;
 float alpha = 0.8;
 
@@ -22,7 +27,10 @@ char *scroll = NULL;
 char *stty_args = "stty raw pass8 nl -echo -iexten -cstopb 38400";
 
 /* identification sequence returned in DA and DECID */
-char *vtiden = "\033[?6c";
+char *vtiden = "\033[?62;4c"; /* VT200 family (62) with sixel (4) */
+
+/* sixel rgb byte order: LSBFirst or MSBFirst */
+int const sixelbyteorder = LSBFirst;
 
 /* Kerning / character bounding-box multipliers */
 static float cwscale = 1.0;

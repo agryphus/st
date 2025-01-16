@@ -318,10 +318,7 @@ void
 zoomabs(const Arg *arg)
 {
 	#if SIXEL_PATCH
-<<<<<<< HEAD
 	int i;
-=======
->>>>>>> 712cc8f (Fix merge conflicts)
 	ImageList *im;
 	#endif // SIXEL_PATCH
 
@@ -332,7 +329,6 @@ zoomabs(const Arg *arg)
 	#endif // FONT2_PATCH
 
 	#if SIXEL_PATCH
-<<<<<<< HEAD
 	/* delete old pixmaps so that xfinishdraw() can create new scaled ones */
 	for (im = term.images, i = 0; i < 2; i++, im = term.images_alt) {
 		for (; im; im = im->next) {
@@ -343,13 +339,6 @@ zoomabs(const Arg *arg)
 			im->pixmap = NULL;
 			im->clipmask = NULL;
 		}
-=======
-	/* deleting old pixmaps forces the new scaled pixmaps to be created */
-	for (im = term.images; im; im = im->next) {
-		if (im->pixmap)
-			XFreePixmap(xw.dpy, (Drawable)im->pixmap);
-		im->pixmap = NULL;
->>>>>>> 712cc8f (Fix merge conflicts)
 	}
 	#endif // SIXEL_PATCH
 
@@ -3181,7 +3170,6 @@ xfinishdraw(void)
 	ImageList *im, *next;
 	Imlib_Image origin, scaled;
 	XGCValues gcvalues;
-<<<<<<< HEAD
 	GC gc = NULL;
 	int width, height;
 	int del, desty, mode, x1, x2, xend;
@@ -3190,11 +3178,6 @@ xfinishdraw(void)
 	#else
 	int bw = borderpx, bh = borderpx;
 	#endif // ANYSIZE_PATCH
-=======
-	GC gc;
-	int width, height;
-	int x, x2, del;
->>>>>>> 712cc8f (Fix merge conflicts)
 	Line line;
 	#endif // SIXEL_PATCH
 
@@ -3206,7 +3189,6 @@ xfinishdraw(void)
 		if (im->x >= term.col || im->y >= term.row || im->y < 0)
 			continue;
 
-<<<<<<< HEAD
 		#if KEYBOARDSELECT_PATCH && REFLOW_PATCH
 		/* do not draw the image on the search bar */
 		if (im->y == term.row-1 && IS_SET(MODE_KBDSELECT) && kbds_issearchmode())
@@ -3216,11 +3198,6 @@ xfinishdraw(void)
 		/* scale the image */
 		width = MAX(im->width * win.cw / im->cw, 1);
 		height = MAX(im->height * win.ch / im->ch, 1);
-=======
-		/* scale the image */
-		width = im->width * win.cw / im->cw;
-		height = im->height * win.ch / im->ch;
->>>>>>> 712cc8f (Fix merge conflicts)
 		if (!im->pixmap) {
 			im->pixmap = (void *)XCreatePixmap(xw.dpy, xw.win, width, height,
 				#if ALPHA_PATCH
@@ -3229,11 +3206,8 @@ xfinishdraw(void)
 				DefaultDepth(xw.dpy, xw.scr)
 				#endif // ALPHA_PATCH
 			);
-<<<<<<< HEAD
 			if (!im->pixmap)
 				continue;
-=======
->>>>>>> 712cc8f (Fix merge conflicts)
 			if (win.cw == im->cw && win.ch == im->ch) {
 				XImage ximage = {
 					.format = ZPixmap,
@@ -3254,21 +3228,15 @@ xfinishdraw(void)
 					#endif // ALPHA_PATCH
 				};
 				XPutImage(xw.dpy, (Drawable)im->pixmap, dc.gc, &ximage, 0, 0, 0, 0, width, height);
-<<<<<<< HEAD
 				if (im->transparent)
 					im->clipmask = (void *)sixel_create_clipmask((char *)im->pixels, width, height);
-=======
->>>>>>> 712cc8f (Fix merge conflicts)
 			} else {
 				origin = imlib_create_image_using_data(im->width, im->height, (DATA32 *)im->pixels);
 				if (!origin)
 					continue;
 				imlib_context_set_image(origin);
 				imlib_image_set_has_alpha(1);
-<<<<<<< HEAD
 				imlib_context_set_anti_alias(im->transparent ? 0 : 1); /* anti-aliasing messes up the clip mask */
-=======
->>>>>>> 712cc8f (Fix merge conflicts)
 				scaled = imlib_create_cropped_scaled_image(0, 0, im->width, im->height, width, height);
 				imlib_free_image_and_decache();
 				if (!scaled)
@@ -3294,16 +3262,12 @@ xfinishdraw(void)
 					#endif // ALPHA_PATCH
 				};
 				XPutImage(xw.dpy, (Drawable)im->pixmap, dc.gc, &ximage, 0, 0, 0, 0, width, height);
-<<<<<<< HEAD
 				if (im->transparent)
 					im->clipmask = (void *)sixel_create_clipmask((char *)imlib_image_get_data_for_reading_only(), width, height);
-=======
->>>>>>> 712cc8f (Fix merge conflicts)
 				imlib_free_image_and_decache();
 			}
 		}
 
-<<<<<<< HEAD
 		/* create GC */
 		if (!gc) {
 			memset(&gcvalues, 0, sizeof(gcvalues));
@@ -3345,34 +3309,6 @@ xfinishdraw(void)
 		/* if all the parts are erased, we can delete the entire image */
 		if (del && im->x + im->cols <= term.col)
 			delete_image(im);
-=======
-		/* clip the image so it does not go over to borders */
-		x2 = MIN(im->x + im->cols, term.col);
-		width = MIN(width, (x2 - im->x) * win.cw);
-
-		/* delete the image if the text cells behind it have been changed */
-		#if SCROLLBACK_PATCH
-		line = TLINE(im->y);
-		#else
-		line = term.line[im->y];
-		#endif // SCROLLBACK_PATCH
-		for (del = 0, x = im->x; x < x2; x++) {
-			if ((del = !(line[x].mode & ATTR_SIXEL)))
-				break;
-		}
-		if (del) {
-			delete_image(im);
-			continue;
-		}
-
-		/* draw the image */
-		memset(&gcvalues, 0, sizeof(gcvalues));
-		gcvalues.graphics_exposures = False;
-		gc = XCreateGC(xw.dpy, xw.win, GCGraphicsExposures, &gcvalues);
-		XCopyArea(xw.dpy, (Drawable)im->pixmap, xw.buf, gc, 0, 0,
-		    width, height, borderpx + im->x * win.cw, borderpx + im->y * win.ch);
-		XFreeGC(xw.dpy, gc);
->>>>>>> 712cc8f (Fix merge conflicts)
 	}
 	if (gc)
 		XFreeGC(xw.dpy, gc);
