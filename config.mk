@@ -7,7 +7,11 @@ VERSION = 0.9.2
 PREFIX = /usr/local
 MANPREFIX = $(PREFIX)/share/man
 ICONPREFIX = $(PREFIX)/share/pixmaps
+<<<<<<< HEAD
 ICONNAME = st.png
+=======
+ICONNAME = st.ff
+>>>>>>> b77c723 (netwmicon: upgrading patch and adding farbfeld variant (#121))
 
 X11INC = /usr/X11R6/include
 X11LIB = /usr/X11R6/lib
