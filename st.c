@@ -192,7 +192,10 @@ static void tcursor(int);
 static void tresetcursor(void);
 #if !REFLOW_PATCH
 static void tdeletechar(int);
+<<<<<<< HEAD
 #endif // REFLOW_PATCH
+=======
+>>>>>>> 712cc8f (Fix merge conflicts)
 #if SIXEL_PATCH
 static void tdeleteimages(void);
 #endif // SIXEL_PATCH
@@ -1211,15 +1214,21 @@ treset(void)
 		#else
 		tclearregion(0, 0, term.col-1, term.row-1);
 		#endif // COLUMNS_PATCH
+<<<<<<< HEAD
 		#endif // REFLOW_PATCH
+=======
+>>>>>>> 712cc8f (Fix merge conflicts)
 		#if SIXEL_PATCH
 		tdeleteimages();
 		#endif // SIXEL_PATCH
 		tswapscreen();
 	}
+<<<<<<< HEAD
 	#if REFLOW_PATCH
 	tfulldirt();
 	#endif // REFLOW_PATCH
+=======
+>>>>>>> 712cc8f (Fix merge conflicts)
 }
 
 #if !REFLOW_PATCH
@@ -2078,7 +2087,11 @@ csihandle(void)
 	int n = 0, len;
 	#if SIXEL_PATCH
 	ImageList *im, *next;
+<<<<<<< HEAD
 	int pi, pa;
+=======
+	int n, pi, pa;
+>>>>>>> 712cc8f (Fix merge conflicts)
 	#endif // SIXEL_PATCH
 	#if REFLOW_PATCH
 	int x;
@@ -2579,11 +2592,19 @@ strhandle(void)
 		{ defaultcs, "cursor" }
 	};
 	#if SIXEL_PATCH
+<<<<<<< HEAD
 	ImageList *im, *newimages, *next, *tail = NULL;
 	int i, x1, y1, x2, y2, y, numimages;
 	int cx, cy;
 	Line line;
 	#if SCROLLBACK_PATCH || REFLOW_PATCH
+=======
+	ImageList *im, *newimages, *next, *tail;
+	int i, x, y, x1, y1, x2, y2, numimages;
+	int cx, cy;
+	Line line;
+	#if SCROLLBACK_PATCH
+>>>>>>> 712cc8f (Fix merge conflicts)
 	int scr = IS_SET(MODE_ALTSCREEN) ? 0 : term.scr;
 	#else
 	int scr = 0;
@@ -2723,6 +2744,7 @@ strhandle(void)
 				sixel_parser_deinit(&sixel_st);
 				perror("sixel_parser_finalize() failed");
 				return;
+<<<<<<< HEAD
 			}
 			sixel_parser_deinit(&sixel_st);
 			x1 = newimages->x;
@@ -2777,11 +2799,42 @@ strhandle(void)
 				 * it is too long) and do not change the cursor position. */
 				for (i = 0, im = newimages; im; im = next, i++) {
 					next = im->next;
+=======
+			}
+			sixel_parser_deinit(&sixel_st);
+			x1 = newimages->x;
+			y1 = newimages->y;
+			x2 = x1 + newimages->cols;
+			y2 = y1 + numimages;
+			for (tail = NULL, im = term.images; im; im = next) {
+				next = im->next;
+				if (im->x >= x1 && im->x + im->cols <= x2 &&
+					im->y >= y1 && im->y <= y2) {
+					delete_image(im);
+					continue;
+				}
+				tail = im;
+			}
+			if (tail) {
+				tail->next = newimages;
+				newimages->prev = tail;
+			} else {
+				term.images = newimages;
+			}
+			x2 = MIN(x2, term.col);
+			for (i = 0, im = newimages; im; im = next, i++) {
+				next = im->next;
+				#if SCROLLBACK_PATCH
+				scr = IS_SET(MODE_ALTSCREEN) ? 0 : term.scr;
+				#endif // SCROLLBACK_PATCH
+				if (IS_SET(MODE_SIXEL_SDM)) {
+>>>>>>> 712cc8f (Fix merge conflicts)
 					if (i >= term.row) {
 						delete_image(im);
 						continue;
 					}
 					im->y = i + scr;
+<<<<<<< HEAD
 					tsetsixelattr(term.line[i], x1, x2);
 					term.dirty[MIN(im->y, term.row-1)] = 1;
 				}
@@ -2803,7 +2856,27 @@ strhandle(void)
 				/* if mode 8452 is set, sixel scrolling leaves cursor to right of graphic */
 				if (IS_SET(MODE_SIXEL_CUR_RT))
 					term.c.x = MIN(term.c.x + newimages->cols, term.col-1);
+=======
+					line = term.line[i];
+				} else {
+					im->y = term.c.y + scr;
+					line = term.line[term.c.y];
+				}
+				for (x = im->x; x < x2; x++) {
+					line[x].u = ' ';
+					line[x].mode = ATTR_SIXEL;
+				}
+				term.dirty[MIN(im->y, term.row-1)] = 1;
+				if (!IS_SET(MODE_SIXEL_SDM) && i < numimages-1) {
+					im->next = NULL;
+					tnewline(0);
+					im->next = next;
+				}
+>>>>>>> 712cc8f (Fix merge conflicts)
 			}
+			/* if mode 8452 is set, sixel scrolling leaves cursor to right of graphic */
+			if (!IS_SET(MODE_SIXEL_SDM) && IS_SET(MODE_SIXEL_CUR_RT))
+				term.c.x = MIN(term.c.x + newimages->cols, term.col-1);
 		}
 		#endif // SIXEL_PATCH
 		#if SYNC_PATCH
@@ -3154,7 +3227,11 @@ tcontrolcode(uchar ascii)
 void
 dcshandle(void)
 {
+<<<<<<< HEAD
 	int bgcolor, transparent;
+=======
+	int bgcolor;
+>>>>>>> 712cc8f (Fix merge conflicts)
 	unsigned char r, g, b, a = 255;
 
 	switch (csiescseq.mode[0]) {
@@ -3176,7 +3253,10 @@ dcshandle(void)
 		break;
 	#endif // SYNC_PATCH
 	case 'q': /* DECSIXEL */
+<<<<<<< HEAD
 		transparent = (csiescseq.narg >= 2 && csiescseq.arg[1] == 1);
+=======
+>>>>>>> 712cc8f (Fix merge conflicts)
 		if (IS_TRUECOL(term.c.attr.bg)) {
 			r = term.c.attr.bg >> 16 & 255;
 			g = term.c.attr.bg >> 8 & 255;
@@ -3187,7 +3267,11 @@ dcshandle(void)
 				a = dc.col[defaultbg].pixel >> 24 & 255;
 		}
 		bgcolor = a << 24 | r << 16 | g << 8 | b;
+<<<<<<< HEAD
 		if (sixel_parser_init(&sixel_st, transparent, (255 << 24), bgcolor, 1, win.cw, win.ch) != 0)
+=======
+		if (sixel_parser_init(&sixel_st, (255 << 24), bgcolor, 1, win.cw, win.ch) != 0)
+>>>>>>> 712cc8f (Fix merge conflicts)
 			perror("sixel_parser_init() failed");
 		term.mode |= MODE_SIXEL;
 		break;
@@ -3539,7 +3623,11 @@ twrite(const char *buf, int buflen, int show_ctrl)
 	return n;
 }
 
+<<<<<<< HEAD
 #if !REFLOW_PATCH
+=======
+#if VIM_BROWSE_PATCH
+>>>>>>> 712cc8f (Fix merge conflicts)
 void
 tresize(int col, int row)
 {
@@ -3558,8 +3646,14 @@ tresize(int col, int row)
 	int mincol = MIN(col, term.col);
 	#endif // COLUMNS_PATCH
 	int *bp;
+<<<<<<< HEAD
 	#if SIXEL_PATCH
 	int x2;
+=======
+	TCursor c;
+	#if SIXEL_PATCH
+	int x, x2;
+>>>>>>> 712cc8f (Fix merge conflicts)
 	Line line;
 	ImageList *im, *next;
 	#endif // SIXEL_PATCH
@@ -3664,9 +3758,17 @@ tresize(int col, int row)
 		tswapscreen();
 		tcursor(CURSOR_LOAD);
 	}
+<<<<<<< HEAD
 
 	#if SIXEL_PATCH
 	/* expand images into new text cells */
+=======
+	term.c = c;
+
+	#if SIXEL_PATCH
+	/* expand images into new text cells to prevent them from being deleted in
+	 * xfinishdraw() that draws the images */
+>>>>>>> 712cc8f (Fix merge conflicts)
 	for (i = 0; i < 2; i++) {
 		for (im = term.images; im; im = next) {
 			next = im->next;
@@ -3691,15 +3793,195 @@ tresize(int col, int row)
 			}
 			line = term.line[im->y];
 			#endif // SCROLLBACK_PATCH
+<<<<<<< HEAD
 			x2 = MIN(im->x + im->cols, col) - 1;
 			if (mincol < col && x2 >= mincol && im->x < col)
 				tsetsixelattr(line, MAX(im->x, mincol), x2);
+=======
+			x2 = MIN(im->x + im->cols, term.col);
+			for (x = im->x; x < x2; x++) {
+				line[x].u = ' ';
+				line[x].mode = ATTR_SIXEL;
+			}
+>>>>>>> 712cc8f (Fix merge conflicts)
 		}
 		tswapscreen();
 	}
 	#endif // SIXEL_PATCH
 }
+<<<<<<< HEAD
 #endif // REFLOW_PATCH
+=======
+#else // !VIM_BROWSE_PATCH
+void
+tresize(int col, int row)
+{
+	int i, j;
+	#if COLUMNS_PATCH
+	int tmp = col;
+	int minrow, mincol;
+
+	if (!term.maxcol)
+		term.maxcol = term.col;
+	col = MAX(col, term.maxcol);
+	minrow = MIN(row, term.row);
+	mincol = MIN(col, term.maxcol);
+	#else
+	int minrow = MIN(row, term.row);
+	int mincol = MIN(col, term.col);
+	#endif // COLUMNS_PATCH
+	int *bp;
+	#if SIXEL_PATCH
+	int x, x2;
+	Line line;
+	ImageList *im, *next;
+	#endif // SIXEL_PATCH
+
+	#if KEYBOARDSELECT_PATCH
+	if ( row < term.row  || col < term.col )
+		toggle_winmode(trt_kbdselect(XK_Escape, NULL, 0));
+	#endif // KEYBOARDSELECT_PATCH
+
+	if (col < 1 || row < 1) {
+		fprintf(stderr,
+		        "tresize: error resizing to %dx%d\n", col, row);
+		return;
+	}
+
+	#if VIM_BROWSE_PATCH
+	if (alt)
+		tswapscreen();
+	#endif // VIM_BROWSE_PATCH
+
+	/* scroll both screens independently */
+	if (row < term.row) {
+		tcursor(CURSOR_SAVE);
+		tsetscroll(0, term.row - 1);
+		for (i = 0; i < 2; i++) {
+			if (term.c.y >= row) {
+				#if SCROLLBACK_PATCH
+				tscrollup(0, term.c.y - row + 1, !IS_SET(MODE_ALTSCREEN));
+				#else
+				tscrollup(0, term.c.y - row + 1);
+				#endif // SCROLLBACK_PATCH
+			}
+			for (j = row; j < term.row; j++)
+				free(term.line[j]);
+			tswapscreen();
+			tcursor(CURSOR_LOAD);
+		}
+	}
+
+	/* resize to new height */
+	term.line = xrealloc(term.line, row * sizeof(Line));
+	term.alt  = xrealloc(term.alt,  row * sizeof(Line));
+	term.dirty = xrealloc(term.dirty, row * sizeof(*term.dirty));
+	term.tabs = xrealloc(term.tabs, col * sizeof(*term.tabs));
+
+	#if SCROLLBACK_PATCH
+	Glyph gc=(Glyph){.bg=term.c.attr.bg, .fg=term.c.attr.fg, .u=' ', .mode=0};
+	for (i = 0; i < HISTSIZE; i++) {
+		term.hist[i] = xrealloc(term.hist[i], col * sizeof(Glyph));
+		for (j = mincol; j < col; j++)
+			term.hist[i][j] = gc;
+	}
+	#endif // SCROLLBACK_PATCH
+
+	/* resize each row to new width, zero-pad if needed */
+	for (i = 0; i < minrow; i++) {
+		term.line[i] = xrealloc(term.line[i], col * sizeof(Glyph));
+		term.alt[i]  = xrealloc(term.alt[i],  col * sizeof(Glyph));
+	}
+
+	/* allocate any new rows */
+	for (/* i = minrow */; i < row; i++) {
+		term.line[i] = xmalloc(col * sizeof(Glyph));
+		term.alt[i] = xmalloc(col * sizeof(Glyph));
+	}
+	#if COLUMNS_PATCH
+	if (col > term.maxcol)
+	#else
+	if (col > term.col)
+	#endif // COLUMNS_PATCH
+	{
+		#if COLUMNS_PATCH
+		bp = term.tabs + term.maxcol;
+		memset(bp, 0, sizeof(*term.tabs) * (col - term.maxcol));
+		#else
+		bp = term.tabs + term.col;
+		memset(bp, 0, sizeof(*term.tabs) * (col - term.col));
+		#endif // COLUMNS_PATCH
+
+		while (--bp > term.tabs && !*bp)
+			/* nothing */ ;
+		for (bp += tabspaces; bp < term.tabs + col; bp += tabspaces)
+			*bp = 1;
+	}
+
+	/* update terminal size */
+	#if COLUMNS_PATCH
+	term.col = tmp;
+	term.maxcol = col;
+	#else
+	term.col = col;
+	#endif // COLUMNS_PATCH
+	term.row = row;
+
+	/* reset scrolling region */
+	tsetscroll(0, row-1);
+	/* Clearing both screens (it makes dirty all lines) */
+	for (i = 0; i < 2; i++) {
+		tmoveto(term.c.x, term.c.y);  /* make use of the LIMIT in tmoveto */
+		tcursor(CURSOR_SAVE);
+		if (mincol < col && 0 < minrow) {
+			tclearregion(mincol, 0, col - 1, minrow - 1);
+		}
+		if (0 < col && minrow < row) {
+			tclearregion(0, minrow, col - 1, row - 1);
+		}
+		tswapscreen();
+		tcursor(CURSOR_LOAD);
+	}
+
+	#if SIXEL_PATCH
+	/* expand images into new text cells to prevent them from being deleted in
+	 * xfinishdraw() that draws the images */
+	for (i = 0; i < 2; i++) {
+		for (im = term.images; im; im = next) {
+			next = im->next;
+			#if SCROLLBACK_PATCH
+			if (IS_SET(MODE_ALTSCREEN)) {
+				if (im->y < 0 || im->y >= term.row) {
+					delete_image(im);
+					continue;
+				}
+				line = term.line[im->y];
+			} else {
+				if (im->y - term.scr < -HISTSIZE || im->y - term.scr >= term.row) {
+					delete_image(im);
+					continue;
+				}
+				line = TLINE(im->y);
+			}
+			#else
+			if (im->y < 0 || im->y >= term.row) {
+				delete_image(im);
+				continue;
+			}
+			line = term.line[im->y];
+			#endif // SCROLLBACK_PATCH
+			x2 = MIN(im->x + im->cols, term.col);
+			for (x = im->x; x < x2; x++) {
+				line[x].u = ' ';
+				line[x].mode = ATTR_SIXEL;
+			}
+		}
+		tswapscreen();
+	}
+	#endif // SIXEL_PATCH
+}
+#endif // VIM_BROWSE_PATCH
+>>>>>>> 712cc8f (Fix merge conflicts)
 
 void
 resettitle(void)

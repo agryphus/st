@@ -36,7 +36,11 @@ static sixel_color_t const sixel_default_color_table[] = {
 void
 scroll_images(int n) {
 	ImageList *im, *next;
+<<<<<<< HEAD
 	#if SCROLLBACK_PATCH || REFLOW_PATCH
+=======
+	#if SCROLLBACK_PATCH
+>>>>>>> 712cc8f (Fix merge conflicts)
 	int top = tisaltscr() ? 0 : term.scr - HISTSIZE;
 	#else
 	int top = 0;
@@ -66,8 +70,11 @@ delete_image(ImageList *im)
 		im->next->prev = im->prev;
 	if (im->pixmap)
 		XFreePixmap(xw.dpy, (Drawable)im->pixmap);
+<<<<<<< HEAD
 	if (im->clipmask)
 		XFreePixmap(xw.dpy, (Drawable)im->clipmask);
+=======
+>>>>>>> 712cc8f (Fix merge conflicts)
 	free(im->pixels);
 	free(im);
 }
@@ -261,10 +268,17 @@ sixel_parser_finalize(sixel_state_t *st, ImageList **newimages, int cx, int cy, 
 	sixel_image_t *image = &st->image;
 	int x, y;
 	sixel_color_no_t *src;
+<<<<<<< HEAD
 	sixel_color_t *dst, color;
 	int w, h;
 	int i, j, cols, numimages;
 	char trans;
+=======
+	sixel_color_t *dst;
+	int color;
+	int w, h;
+	int i, j, cols, numimages;
+>>>>>>> 712cc8f (Fix merge conflicts)
 	ImageList *im, *next, *tail;
 
 	if (!image->data)
@@ -308,9 +322,30 @@ sixel_parser_finalize(sixel_state_t *st, ImageList **newimages, int cx, int cy, 
 			im->height = MIN(h - ch * i, ch);
 			im->pixels = malloc(im->width * im->height * 4);
 			im->pixmap = NULL;
+<<<<<<< HEAD
 			im->clipmask = NULL;
 			im->cw = cw;
 			im->ch = ch;
+=======
+			im->cw = cw;
+			im->ch = ch;
+		}
+		if (!im || !im->pixels) {
+			for (im = *newimages; im; im = next) {
+				next = im->next;
+				if (im->pixels)
+					free(im->pixels);
+				free(im);
+			}
+			*newimages = NULL;
+			return -1;
+		}
+		dst = (sixel_color_t *)im->pixels;
+		for (j = 0; j < im->height && y < h; j++, y++) {
+			src = st->image.data + image->width * y;
+			for (x = 0; x < w; x++)
+				*dst++ = st->image.palette[*src++];
+>>>>>>> 712cc8f (Fix merge conflicts)
 		}
 		if (!im || !im->pixels) {
 			for (im = *newimages; im; im = next) {

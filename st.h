@@ -85,6 +85,7 @@ typedef struct _ImageList {
 	int height;
 	int x;
 	int y;
+<<<<<<< HEAD
 	#if REFLOW_PATCH
 	int reflow_y;
 	#endif // REFLOW_PATCH
@@ -92,6 +93,11 @@ typedef struct _ImageList {
 	int cw;
 	int ch;
 	int transparent;
+=======
+	int cols;
+	int cw;
+	int ch;
+>>>>>>> 712cc8f (Fix merge conflicts)
 } ImageList;
 #endif // SIXEL_PATCH
 
