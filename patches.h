@@ -29,6 +29,13 @@
  */
 #define ALPHA_GRADIENT_PATCH 0
 
+/* Allows for the initial size of the terminal to be specified as pixel width and height
+ * using the -G command line option. Can be combined with the anysize patch to also allow
+ * the window to be resized to any pixel size.
+ * https://st.suckless.org/patches/anygeometry/
+ */
+#define ANYGEOMETRY_PATCH 0
+
 /* This patch allows st to resize to any pixel size rather than snapping to character width/height.
  * https://st.suckless.org/patches/anysize/
  */
@@ -57,7 +64,7 @@
  *    https://invisible-island.net/xterm/ctlseqs/ctlseqs.html#h4-Functions-using-CSI-_-ordered-by-the-final-character-lparen-s-rparen:CSI-Ps-SP-q.1D81
  * https://st.suckless.org/patches/blinking_cursor/
  */
-#define BLINKING_CURSOR_PATCH 0
+#define BLINKING_CURSOR_PATCH 1
 
 /* By default bold text is rendered with a bold font in the bright variant of the current color.
  * This patch makes bold text rendered simply as bold, leaving the color unaffected.
@@ -77,9 +84,8 @@
 #define CLIPBOARD_PATCH 0
 
 /* This patch allows st to be resized without cutting off text when the terminal window is
- * made larger again. Text does not wrap when the terminal window is made smaller.
- *
- * The vim browse patch takes precedence over this patch.
+ * made larger again. Text does not wrap when the terminal window is made smaller, you may
+ * also want to have a look at the reflow patch.
  *
  * https://github.com/bakkeby/st-flexipatch/issues/34
  */
@@ -101,7 +107,7 @@
  * restores the window title (for instance nvim does this when opening and closing).
  * https://st.suckless.org/patches/csi_22_23/
  */
-#define CSI_22_23_PATCH 0
+#define CSI_22_23_PATCH 1
 
 /* According to the specification (see link in BLINKING_CURSOR_PATCH) the "Set cursor style
  * (DECSCUSR), VT520." escape sequences define both values of 0 and 1 as a blinking block,
@@ -191,7 +197,7 @@
  * the terminal window.
  * https://st.suckless.org/patches/hidecursor/
  */
-#define HIDECURSOR_PATCH 0
+#define HIDECURSOR_PATCH 1
 
 /* This patch hides the terminal cursor when the window loses focus (as opposed to showing a hollow
  * cursor).
@@ -213,6 +219,8 @@
 #define ISO14755_PATCH 0
 
 /* This patch allows you to select text on the terminal using keyboard shortcuts.
+ * NB: An improved variant of this patch is enabled if combined with the reflow patch.
+ *
  * https://st.suckless.org/patches/keyboard_select/
  */
 #define KEYBOARDSELECT_PATCH 0
@@ -233,10 +241,39 @@
  */
 #define MONOCHROME_PATCH 0
 
-/* This patch sets the _NET_WM_ICON X property with a hardcoded icon for st.
+/* This patch sets the _NET_WM_ICON X property with an icon that is read from a .png file.
+ * This patch depends on the GD Graphics Library and headers to compile.
+ * You need to uncomment the corresponding lines in config.mk to use the gd library.
+ *
+ * The default location for the .png file is:
+ *    - /usr/local/share/pixmaps/st.png
+ *
  * https://st.suckless.org/patches/netwmicon/
  */
 #define NETWMICON_PATCH 0
+
+/* This patch sets the _NET_WM_ICON X property with an icon that is read from a farbfeld image.
+ * The benefit of this patch is that you do not need an additional dependency on an external
+ * library to read and convert the farbfeld image.
+ *
+ * The default location for the farbfeld image is:
+ *    - /usr/local/share/pixmaps/st.ff
+ *
+ * Remember to change the ICONNAME in config.mk from st.png to st.ff when using this patch.
+ *
+ * Example command to convert a .png to farbfeld:
+ *    $ png2ff < st.png > st.ff
+ *
+ * https://tools.suckless.org/farbfeld/
+ * https://github.com/bakkeby/patches/wiki/netwmicon/
+ */
+#define NETWMICON_FF_PATCH 0
+
+/* This patch sets the _NET_WM_ICON X property with a hardcoded icon for st. This is the
+ * original version that predates the version that reads the image from a .png file.
+ * https://st.suckless.org/patches/netwmicon/
+ */
+#define NETWMICON_LEGACY_PATCH 0
 
 /* This patch allows you to spawn a new st terminal using Ctrl-Shift-Return. It will have the
  * same CWD (current working directory) as the original st instance.
@@ -263,6 +300,28 @@
  * https://www.reddit.com/r/suckless/comments/cc83om/st_open_url/
  */
 #define OPENURLONCLICK_PATCH 0
+
+/* This patch allows st to fetch the current working directory through the OSC 7 escape
+ * sequence emitted by shells. Must be used with newterm patch.
+ *
+ * https://codeberg.org/dnkl/foot/wiki#spawning-new-terminal-instances-in-the-current-working-directory
+ * https://github.com/veltza/st-sx/commit/817865c2c6ed905af8849580e58bdcf399216fbd
+ */
+#define OSC7_PATCH 0
+
+/* This patch allows jumping between prompts by utilizing the OSC 133 escape sequence
+ * emitted by shells. Must be used with either reflow or scrollback patch.
+ *
+ * https://codeberg.org/dnkl/foot#jumping-between-prompts
+ */
+#define OSC133_PATCH 0
+
+/* Reflow.
+ * Allows st to be resized without cutting off text when the terminal window is made larger again.
+ * Text wraps when the terminal window is made smaller.
+ * Comes with scrollback.
+ */
+#define REFLOW_PATCH 0
 
 /* This patch allows you to specify a border that is relative in size to the width of a cell
  * in the terminal.
@@ -292,6 +351,13 @@
  * https://st.suckless.org/patches/scrollback/
  */
 #define SCROLLBACK_MOUSE_ALTSCREEN_PATCH 0
+
+/* This patch adds the two color-settings selectionfg and selectionbg to config.def.h.
+ * Those define the fore- and background colors which are used when text on the screen is selected
+ * with the mouse. This removes the default behaviour which would simply reverse the colors.
+ * https://st.suckless.org/patches/selectioncolors/
+ */
+#define SELECTION_COLORS_PATCH 0
 
 /* This is the single drawable buffer patch as outlined in the FAQ to get images
  * in w3m to display. While this patch does not break the alpha patch it images
@@ -398,16 +464,6 @@
  * https://st.suckless.org/patches/vertcenter/
  */
 #define VERTCENTER_PATCH 0
-
-/* The vim-browse patch offers the possibility to move through the terminal history-buffer,
- * search for strings using VIM-like motions, operations and quantifiers. It overlays the
- * screen with highlighted search results and displays the current operation / motions / search
- * string in the bottom right corner.
- *
- * https://github.com/juliusHuelsmann/st-history-vim
- * https://st.suckless.org/patches/vim_browse/
- */
-#define VIM_BROWSE_PATCH 0
 
 /* Briefly inverts window content on terminal bell event.
  * https://st.suckless.org/patches/visualbell/
